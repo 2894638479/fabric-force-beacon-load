@@ -4,7 +4,7 @@ plugins {
 	id "org.jetbrains.kotlin.jvm" version "2.2.10"
 }
 
-version = project.mod_version
+version = project.mod_version + '+mc' + project.minecraft_version
 group = project.maven_group
 
 base {
@@ -45,7 +45,7 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
-    modImplementation "maven.modrinth:sodium:mc1.20.1-0.5.13-fabric"
+    modImplementation "maven.modrinth:sodium:${project.sodium_version}"
 }
 
 configurations.configureEach {
@@ -56,12 +56,17 @@ configurations.configureEach {
     }
 }
 
-
 processResources {
 	inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "sodium_version", project.sodium_version_code
 
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+        expand (
+            "version": inputs.properties.version,
+            "minecraft_version": inputs.properties.minecraft_version,
+            "sodium_version": inputs.properties.sodium_version
+        )
 	}
 }
 

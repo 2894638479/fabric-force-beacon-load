@@ -3,15 +3,14 @@
 	"id": "force-beacon-load",
 	"version": "${version}",
 	"name": "Force Beacon Load",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "强制信标加载",
 	"authors": [
-		"Me!"
+		"2894638479"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/2894638479/fabric-force-beacon-load"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/force-beacon-load/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -44,12 +43,13 @@
     "accessWidener": "forcebeaconload.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.20.1",
+		"minecraft": "~${minecraft_version}",
 		"java": ">=17",
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+        "sodium": "${sodium_version}",
+		"blue-archive-halo": ">=1.2.0"
 	}
 }
