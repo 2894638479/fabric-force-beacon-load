@@ -19,7 +19,7 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
         }
     }
     fun add(beacon: BeaconBlockEntity,world: ServerWorld){
-        if(beacons[beacon.pos] != beacon && beacon.level != 0){
+        if(beacons[beacon.pos] != beacon && beacon.valid){
             beacons[beacon.pos] = beacon
             markDirty()
             ForceBeaconLoad.sendToAllPlayer(world)
@@ -41,7 +41,7 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
         if(false)
         beacons.replaceAll { pos,entity ->
             (world.getBlockEntity(pos) as? BeaconBlockEntity)
-                ?.takeIf { it.level != 0 } ?: entity
+                ?.takeIf { it.valid } ?: entity
         }
     }
     val isEmpty get() = beacons.isEmpty()
@@ -51,6 +51,7 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
     }
     fun invalidate() { lastSendTime = 0 }
     companion object {
+        val BeaconBlockEntity.valid get() = (this as IsLevelValid).`forcebeaconload$isLevelValid`
         private fun saveBeacons(beacons: Collection<BeaconBlockEntity>,nbt: NbtCompound) {
             val listTag = NbtList()
             for (beacon in beacons) {
