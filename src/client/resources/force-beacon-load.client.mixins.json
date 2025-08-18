@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "name.forcebeaconload.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MinecraftClientMixin",
+    "RenderSectionMixin",
+    "SodiumWorldRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

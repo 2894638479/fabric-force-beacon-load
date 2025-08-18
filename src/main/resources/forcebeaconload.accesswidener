@@ -1,0 +1,6 @@
+accessWidener	v2	named
+
+accessible field net/minecraft/block/entity/BeaconBlockEntity level I
+accessible field net/minecraft/block/entity/BeaconBlockEntity beamSegments Ljava/util/List;
+accessible method net/minecraft/block/entity/BeaconBlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;)V
+accessible field net/minecraft/block/entity/BeaconBlockEntity$BeamSegment height I
