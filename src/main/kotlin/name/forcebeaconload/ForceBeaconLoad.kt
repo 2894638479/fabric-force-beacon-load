@@ -6,12 +6,16 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import org.slf4j.LoggerFactory
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 object ForceBeaconLoad : ModInitializer {
@@ -26,6 +30,13 @@ object ForceBeaconLoad : ModInitializer {
         }
         ServerTickEvents.END_WORLD_TICK.register { world: ServerWorld ->
             world.beaconData.tick(world)
+            if(world.time % 80L == 0L) world.players.forEach { player ->
+                world.beaconData.beacons.forEach { (_,beacon) ->
+                    if(shouldAddEffectToPlayer(beacon,player)){
+                        addEffectToPlayer(beacon,player)
+                    }
+                }
+            }
         }
     }
     val ServerWorld.beaconData get() = chunkManager.persistentStateManager.getOrCreate(
@@ -46,5 +57,16 @@ object ForceBeaconLoad : ModInitializer {
         world.players.forEach {
             sendBeaconDataToPlayer(it,false)
         }
+    }
+    fun shouldAddEffectToPlayer(beacon: BeaconBlockEntity,player: ServerPlayerEntity): Boolean{
+        val level = beacon.level
+        val posP = player.pos
+        val posB = beacon.pos
+        val distance = sqrt((posB.x - posP.x).pow(2) + (posB.y - posP.y).pow(2))
+        return distance < (level * 50 + 100)
+    }
+    fun addEffectToPlayer(beacon: BeaconBlockEntity,player: ServerPlayerEntity){
+        val pos = BlockPos.ofFloored(player.pos)
+        BeaconBlockEntity.applyPlayerEffects(player.world,pos, beacon.level,beacon.primary,beacon.secondary)
     }
 }
