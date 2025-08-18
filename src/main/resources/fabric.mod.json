@@ -26,7 +26,13 @@
 				"value": "name.forcebeaconload.ForceBeaconLoadClient",
 				"adapter": "kotlin"
 			}
-		]
+		],
+        "blue_archive_halo_beacon_level_shrinker": [
+            {
+                "value": "name.forcebeaconload.BeaconLevelShrinker",
+                "adapter": "kotlin"
+            }
+        ]
 	},
 	"mixins": [
 		"force-beacon-load.mixins.json",

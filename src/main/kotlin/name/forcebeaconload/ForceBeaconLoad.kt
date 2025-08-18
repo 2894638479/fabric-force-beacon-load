@@ -62,7 +62,7 @@ object ForceBeaconLoad : ModInitializer {
         val level = beacon.level
         val posP = player.pos
         val posB = beacon.pos
-        val distance = sqrt((posB.x - posP.x).pow(2) + (posB.y - posP.y).pow(2))
+        val distance = sqrt((posB.x - posP.x).pow(2) + (posB.z - posP.z).pow(2))
         return distance < (level * 50 + 100)
     }
     fun addEffectToPlayer(beacon: BeaconBlockEntity,player: ServerPlayerEntity){
