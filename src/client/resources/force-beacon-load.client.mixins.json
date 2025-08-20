@@ -6,7 +6,8 @@
     "GameRendererMixin",
     "MinecraftClientMixin",
     "RenderSectionMixin",
-    "SodiumWorldRendererMixin"
+    "SodiumWorldRendererMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
