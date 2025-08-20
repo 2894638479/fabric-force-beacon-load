@@ -27,7 +27,7 @@ public class BlockMixin {
         }
     }
     @Inject(method = "onBroken",at = @At("HEAD"))
-    private static void forcebeaconload$updateBeaconData(WorldAccess world, BlockPos pos, BlockState state, CallbackInfo ci){
+    private void forcebeaconload$updateBeaconData(WorldAccess world, BlockPos pos, BlockState state, CallbackInfo ci){
         if(world instanceof ServerWorld world1) {
             if(state.getBlock() == Blocks.BEACON) {
                 ForceBeaconLoad.INSTANCE.getBeaconData(world1).remove(pos,world1);
