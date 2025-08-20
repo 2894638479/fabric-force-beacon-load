@@ -46,7 +46,6 @@ object ForceBeaconLoad : ModInitializer {
         val world = (player.world as? ServerWorld) ?: return
         val worldId = world.dimensionKey.value
         val beaconData = world.beaconData.apply { if(check) check(world) }
-        if(beaconData.isEmpty) return
         val nbt = beaconData.writeNbt(NbtCompound())
         nbt.putString("world",worldId.toString())
         ServerPlayNetworking.send(player,beaconDataPackId,
