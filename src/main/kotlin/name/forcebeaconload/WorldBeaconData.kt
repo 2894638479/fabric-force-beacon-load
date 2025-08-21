@@ -4,13 +4,15 @@ import net.minecraft.block.Blocks
 import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
+import net.minecraft.registry.RegistryWrapper
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.PersistentState
 import net.minecraft.world.World
 
-class WorldBeaconData(nbt: NbtCompound): PersistentState() {
-    val beacons = readBeacons(nbt).associateBy { it.pos }.toMutableMap()
+class WorldBeaconData(nbt: NbtCompound,lookup:RegistryWrapper.WrapperLookup): PersistentState() {
+    val beacons = readBeacons(nbt,lookup).associateBy { it.pos }.toMutableMap()
     private var lastSendTime = 0L
     fun tick(world: ServerWorld){
         if(world.time - lastSendTime > 100){
@@ -45,18 +47,19 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
         }
     }
     val isEmpty get() = beacons.isEmpty()
-    override fun writeNbt(nbt: NbtCompound): NbtCompound {
-        saveBeacons(beacons.values,nbt)
+    override fun writeNbt(nbt: NbtCompound,registryLookup: RegistryWrapper.WrapperLookup): NbtCompound {
+        saveBeacons(beacons.values,nbt,registryLookup)
         return nbt
     }
     fun invalidate() { lastSendTime = 0 }
+
     companion object {
         val BeaconBlockEntity.valid get() = (this as IsLevelValid).`forcebeaconload$isLevelValid`
-        private fun saveBeacons(beacons: Collection<BeaconBlockEntity>,nbt: NbtCompound) {
+        private fun saveBeacons(beacons: Collection<BeaconBlockEntity>,nbt: NbtCompound,lookup:RegistryWrapper.WrapperLookup) {
             val listTag = NbtList()
             for (beacon in beacons) {
                 val tag = NbtCompound()
-                beacon.writeNbt(tag)
+                beacon.writeNbt(tag,lookup)
                 tag.putInt("x",beacon.pos.x)
                 tag.putInt("y",beacon.pos.y)
                 tag.putInt("z",beacon.pos.z)
@@ -64,9 +67,7 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
                 for(segment in beacon.beamSegments){
                     val segNbt = NbtCompound()
                     segNbt.putInt("h",segment.height)
-                    segNbt.putFloat("c0",segment.color[0])
-                    segNbt.putFloat("c1",segment.color[1])
-                    segNbt.putFloat("c2",segment.color[2])
+                    segNbt.putInt("color",segment.color)
                     segments.add(segNbt)
                 }
                 tag.put("segments",segments)
@@ -74,7 +75,7 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
             }
             nbt.put("beacons",listTag)
         }
-        private fun readBeacons(nbt: NbtCompound):List<BeaconBlockEntity> {
+        private fun readBeacons(nbt: NbtCompound,lookup:RegistryWrapper.WrapperLookup):List<BeaconBlockEntity> {
             val listTag = nbt.getList("beacons",10)
             return List(listTag.size) {
                 val tag = listTag.getCompound(it)
@@ -83,12 +84,11 @@ class WorldBeaconData(nbt: NbtCompound): PersistentState() {
                 val segments = List(segNbts.size){
                     val tag = segNbts.getCompound(it)
                     val height = tag.getInt("h")
-                    BeaconBlockEntity.BeamSegment(floatArrayOf(tag.getFloat("c0"),
-                        tag.getFloat("c1"),tag.getFloat("c2")))
+                    BeaconBlockEntity.BeamSegment(tag.getInt("color"))
                         .also { it.height = height }
                 }
                 BeaconBlockEntity(pos,Blocks.BEACON.defaultState).apply {
-                    readNbt(tag)
+                    readNbt(tag,lookup)
                     level = tag.getInt("Levels")
                     beamSegments = segments
                 }

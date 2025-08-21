@@ -3,11 +3,7 @@ package name.forcebeaconload.mixin.client;
 import name.forcebeaconload.ForceBeaconLoadClient;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.*;
 import net.minecraft.client.world.ClientWorld;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -31,7 +27,7 @@ public class WorldRendererMixin {
     private ClientWorld world;
 
     @Inject(method = "render",at = @At("HEAD"))
-    void forcebeaconload$renderAllBeacons(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f projectionMatrix, CallbackInfo ci){
+    void forcebeaconload$renderAllBeacons(RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci){
         noCullingBlockEntities.removeIf((entity) -> entity instanceof BeaconBlockEntity);
         noCullingBlockEntities.addAll(ForceBeaconLoadClient.INSTANCE.getBeacons(world));
     }

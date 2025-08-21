@@ -2,8 +2,9 @@ accessWidener	v2	named
 
 accessible field net/minecraft/block/entity/BeaconBlockEntity level I
 accessible field net/minecraft/block/entity/BeaconBlockEntity beamSegments Ljava/util/List;
-accessible method net/minecraft/block/entity/BeaconBlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;)V
+accessible method net/minecraft/block/entity/BeaconBlockEntity writeNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
+accessible method net/minecraft/block/entity/BeaconBlockEntity readNbt (Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/registry/RegistryWrapper$WrapperLookup;)V
 accessible field net/minecraft/block/entity/BeaconBlockEntity$BeamSegment height I
-accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/entity/effect/StatusEffect;Lnet/minecraft/entity/effect/StatusEffect;)V
-accessible field net/minecraft/block/entity/BeaconBlockEntity primary Lnet/minecraft/entity/effect/StatusEffect;
-accessible field net/minecraft/block/entity/BeaconBlockEntity secondary Lnet/minecraft/entity/effect/StatusEffect;
+accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/registry/entry/RegistryEntry;)V
+accessible field net/minecraft/block/entity/BeaconBlockEntity primary Lnet/minecraft/registry/entry/RegistryEntry;
+accessible field net/minecraft/block/entity/BeaconBlockEntity secondary Lnet/minecraft/registry/entry/RegistryEntry;

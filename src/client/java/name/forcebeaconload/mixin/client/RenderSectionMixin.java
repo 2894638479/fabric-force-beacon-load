@@ -1,7 +1,6 @@
 package name.forcebeaconload.mixin.client;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
+import net.caffeinemc.mods.sodium.client.render.chunk.RenderSection;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;

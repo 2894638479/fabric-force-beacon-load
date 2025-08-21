@@ -4,15 +4,18 @@ import io.netty.buffer.Unpooled
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.block.entity.BeaconBlockEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.network.packet.CustomPayload
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.PersistentState
 import org.slf4j.LoggerFactory
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -22,6 +25,7 @@ object ForceBeaconLoad : ModInitializer {
     private val logger = LoggerFactory.getLogger("force-beacon-load")
 
 	override fun onInitialize() {
+        PayloadTypeRegistry.playS2C().register(BeaconDataPayload.ID, BeaconDataPayload.CODEC)
         ServerPlayConnectionEvents.JOIN.register { handler,sender,server ->
             sendBeaconDataToPlayer(handler.player)
         }
@@ -39,17 +43,21 @@ object ForceBeaconLoad : ModInitializer {
             }
         }
     }
-    val ServerWorld.beaconData get() = chunkManager.persistentStateManager.getOrCreate(
-        { WorldBeaconData(it) },{ WorldBeaconData(NbtCompound())},"beacons")
-    val beaconDataPackId = Identifier("forcebeaconload","beacon_data")
+    val ServerWorld.id get() = dimensionEntry.key.orElse(null)?.value
+    val ServerWorld.beaconDataType get() = PersistentState.Type(
+        { WorldBeaconData(NbtCompound(), registryManager) },
+        ::WorldBeaconData,
+        null
+    )
+    val ServerWorld.beaconData get() = chunkManager.persistentStateManager.getOrCreate(beaconDataType,"beacons")
+    val beaconDataPackId = Identifier.of("forcebeaconload","beacon_data")
     fun sendBeaconDataToPlayer(player: ServerPlayerEntity,check: Boolean = true){
         val world = (player.world as? ServerWorld) ?: return
-        val worldId = world.dimensionKey.value
+        val worldId = world.id ?: ""
         val beaconData = world.beaconData.apply { if(check) check(world) }
-        val nbt = beaconData.writeNbt(NbtCompound())
+        val nbt = beaconData.writeNbt(NbtCompound(),player.world.registryManager)
         nbt.putString("world",worldId.toString())
-        ServerPlayNetworking.send(player,beaconDataPackId,
-            PacketByteBuf(Unpooled.buffer()).writeNbt(nbt))
+        ServerPlayNetworking.send(player, BeaconDataPayload(nbt))
     }
     fun sendToAllPlayer(world: ServerWorld){
         world.beaconData.check(world)

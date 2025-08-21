@@ -9,6 +9,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -60,8 +62,8 @@ public abstract class BeaconBlockEntityMixin implements IsLevelValid, HasLevelSh
             ForceBeaconLoad.INSTANCE.getBeaconData(world1).invalidate();
         }
     }
-    @Redirect(method = "tick",at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BeaconBlockEntity;applyPlayerEffects(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/entity/effect/StatusEffect;Lnet/minecraft/entity/effect/StatusEffect;)V"))
-    private static void forcebeaconload$notAddPlayerEffects(World world, BlockPos pos, int beaconLevel, StatusEffect primaryEffect, StatusEffect secondaryEffect){}
+    @Redirect(method = "tick",at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BeaconBlockEntity;applyPlayerEffects(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/registry/entry/RegistryEntry;)V"))
+    private static void forcebeaconload$notAddPlayerEffects(World world, BlockPos pos, int beaconLevel, RegistryEntry<StatusEffect> primaryEffect, RegistryEntry<StatusEffect> secondaryEffect){}
 
     @Redirect(method = "applyPlayerEffects",at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Box;expand(D)Lnet/minecraft/util/math/Box;"))
     private static Box forcebeaconload$changePlayerEffectDistance(Box instance, double value){
@@ -88,11 +90,11 @@ public abstract class BeaconBlockEntityMixin implements IsLevelValid, HasLevelSh
         forcebeaconload$levelShrink = forcebeaconload$calLevelShrink();
     }
     @Inject(method = "writeNbt",at = @At("HEAD"))
-    void forcebeaconload$writeExtra(NbtCompound nbt, CallbackInfo ci){
+    void forcebeaconload$writeExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci){
         nbt.putInt("levelShrink",forcebeaconload$levelShrink);
     }
     @Inject(method = "readNbt",at = @At("HEAD"))
-    void forcebeaconload$readExtra(NbtCompound nbt, CallbackInfo ci){
+    void forcebeaconload$readExtra(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci){
         forcebeaconload$levelShrink = nbt.getInt("levelShrink");
     }
 }

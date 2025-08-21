@@ -48,14 +48,6 @@ dependencies {
     modImplementation "maven.modrinth:sodium:${project.sodium_version}"
 }
 
-configurations.configureEach {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.lwjgl") {
-            useVersion("3.3.1")
-        }
-    }
-}
-
 processResources {
 	inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
